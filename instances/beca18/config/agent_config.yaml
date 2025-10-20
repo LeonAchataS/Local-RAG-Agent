@@ -21,9 +21,10 @@ vectordb:
   distance_metric: "cosine"
 
 preprocessing:
-  chunk_size: 800
-  chunk_overlap: 100
-  min_chunk_size: 100
+  chunk_size: 1000      # Aumentado para documentos legales
+  chunk_overlap: 200    # 20% del chunk_size
+  min_chunk_size: 150   # Chunks más grandes
+  strategy: "legal"     # Estrategia especializada en documentos legales
 
 prompts:
   system: "prompts/system_prompt.txt"

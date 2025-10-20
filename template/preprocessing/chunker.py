@@ -1,28 +1,60 @@
 """
 División de documentos en chunks para vectorización
+Soporta múltiples estrategias: simple, legal, semantic
 """
 from typing import List, Dict, Any
 import re
+from .strategies import SimpleChunker, LegalChunker, SemanticChunker
 
 
 class Chunker:
-    """Divide documentos en chunks manejables"""
+    """
+    Divide documentos en chunks manejables
+    Soporta múltiples estrategias configurables
+    """
     
     def __init__(
         self,
         chunk_size: int = 800,
         chunk_overlap: int = 100,
-        min_chunk_size: int = 100
+        min_chunk_size: int = 100,
+        strategy: str = "simple"
     ):
         """
         Args:
             chunk_size: Tamaño aproximado de cada chunk en caracteres
             chunk_overlap: Solapamiento entre chunks para mantener contexto
             min_chunk_size: Tamaño mínimo de un chunk
+            strategy: Estrategia de chunking ('simple', 'legal', 'semantic')
         """
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.min_chunk_size = min_chunk_size
+        self.strategy_name = strategy
+        
+        # Inicializar estrategia
+        self._init_strategy()
+    
+    def _init_strategy(self):
+        """Inicializa la estrategia de chunking seleccionada"""
+        strategies = {
+            'simple': SimpleChunker,
+            'legal': LegalChunker,
+            'semantic': SemanticChunker
+        }
+        
+        if self.strategy_name not in strategies:
+            raise ValueError(
+                f"Estrategia '{self.strategy_name}' no soportada. "
+                f"Opciones: {list(strategies.keys())}"
+            )
+        
+        strategy_class = strategies[self.strategy_name]
+        self.strategy = strategy_class(
+            self.chunk_size,
+            self.chunk_overlap,
+            self.min_chunk_size
+        )
     
     def split_by_sentences(self, text: str) -> List[str]:
         """
@@ -130,14 +162,14 @@ class Chunker:
     def chunk_text(
         self,
         text: str,
-        method: str = "paragraphs"
+        method: str = None  # Deprecated, usa strategy en __init__
     ) -> List[str]:
         """
-        Divide texto en chunks usando el método especificado
+        Divide texto en chunks usando la estrategia configurada
         
         Args:
             text: Texto a dividir
-            method: Método de división ('chars', 'paragraphs', 'sentences')
+            method: DEPRECADO - Usa 'strategy' en __init__ en su lugar
         
         Returns:
             Lista de chunks
@@ -145,16 +177,8 @@ class Chunker:
         if not text or not text.strip():
             return []
         
-        if method == "chars":
-            return self.chunk_by_chars(text)
-        elif method == "paragraphs":
-            return self.chunk_by_paragraphs(text)
-        elif method == "sentences":
-            sentences = self.split_by_sentences(text)
-            # Agrupar oraciones en chunks
-            return self._group_sentences(sentences)
-        else:
-            raise ValueError(f"Método no soportado: {method}")
+        # Usar estrategia configurada
+        return self.strategy.chunk_text(text)
     
     def _group_sentences(self, sentences: List[str]) -> List[str]:
         """Agrupa oraciones en chunks del tamaño especificado"""
@@ -180,14 +204,14 @@ class Chunker:
     def chunk_document(
         self,
         document: Dict[str, Any],
-        method: str = "paragraphs"
+        method: str = None  # Deprecated
     ) -> List[Dict[str, Any]]:
         """
         Divide un documento completo en chunks con metadata
         
         Args:
             document: Dict con 'text' y 'metadata'
-            method: Método de chunking
+            method: DEPRECADO - Usa 'strategy' en __init__
         
         Returns:
             Lista de chunks con metadata
@@ -195,7 +219,7 @@ class Chunker:
         text = document.get('text', '')
         base_metadata = document.get('metadata', {})
         
-        chunks = self.chunk_text(text, method=method)
+        chunks = self.chunk_text(text)
         
         # Crear documentos chunkeados con metadata
         chunked_docs = []
@@ -217,14 +241,14 @@ class Chunker:
     def chunk_documents(
         self,
         documents: List[Dict[str, Any]],
-        method: str = "paragraphs"
+        method: str = None  # Deprecated
     ) -> List[Dict[str, Any]]:
         """
         Divide múltiples documentos en chunks
         
         Args:
             documents: Lista de documentos
-            method: Método de chunking
+            method: DEPRECADO - Usa 'strategy' en __init__
         
         Returns:
             Lista de todos los chunks
@@ -232,7 +256,7 @@ class Chunker:
         all_chunks = []
         
         for doc in documents:
-            chunks = self.chunk_document(doc, method=method)
+            chunks = self.chunk_document(doc)
             all_chunks.extend(chunks)
         
         return all_chunks

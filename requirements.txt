@@ -8,3 +8,4 @@ openpyxl
 pyyaml
 python-dotenv
 tqdm
+rich

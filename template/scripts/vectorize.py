@@ -63,14 +63,15 @@ def vectorize_instance(instance_path: str | Path, source_dir: str = None):
         doc['text'] = TextCleaner.clean(doc['text'])
     
     # Dividir en chunks
-    logger.info("Dividiendo en chunks...")
+    logger.info(f"Dividiendo en chunks usando estrategia '{config.preprocessing.strategy}'...")
     chunker = Chunker(
         chunk_size=config.preprocessing.chunk_size,
         chunk_overlap=config.preprocessing.chunk_overlap,
-        min_chunk_size=config.preprocessing.min_chunk_size
+        min_chunk_size=config.preprocessing.min_chunk_size,
+        strategy=config.preprocessing.strategy
     )
     
-    chunks = chunker.chunk_documents(documents, method="paragraphs")
+    chunks = chunker.chunk_documents(documents)
     logger.info(f"Chunks generados: {len(chunks)}")
     
     # Inicializar servicios

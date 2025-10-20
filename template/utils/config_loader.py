@@ -39,6 +39,7 @@ class PreprocessingConfig:
     chunk_size: int = 800
     chunk_overlap: int = 100
     min_chunk_size: int = 100
+    strategy: str = "simple"  # 'simple', 'legal', 'semantic'
 
 
 @dataclass

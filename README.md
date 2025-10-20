@@ -10,6 +10,8 @@ Sistema RAG (Retrieval-Augmented Generation) modular para crear agentes especial
 - 🏢 Multi-instancia (múltiples agentes especializados)
 - ⚡ ChromaDB para búsqueda vectorial eficiente
 - 🎯 Arquitectura modular
+- 🧩 **Estrategias de chunking:** Simple, Legal, Semántico
+- 📊 **Herramientas de evaluación:** Diagnóstico de retrieval y tuning
 
 ## Requisitos
 
@@ -130,9 +132,19 @@ embeddings:
   device: "cpu"
 
 preprocessing:
-  chunk_size: 800
-  chunk_overlap: 100
+  chunk_size: 1000
+  chunk_overlap: 200
+  min_chunk_size: 150
+  strategy: "legal"  # 'simple', 'legal', 'semantic'
 ```
+
+### Estrategias de Chunking
+
+- **`simple`**: Para documentos generales (blogs, artículos)
+- **`legal`**: Para documentos estructurados (leyes, reglamentos, bases) - **Recomendado para Beca 18**
+- **`semantic`**: Para documentos narrativos (libros, manuales)
+
+Ver [ESTRATEGIAS_CHUNKING.md](ESTRATEGIAS_CHUNKING.md) para más detalles.
 
 ## Modelos Recomendados
 
@@ -144,6 +156,25 @@ preprocessing:
 ### Embeddings
 - `paraphrase-multilingual-MiniLM-L12-v2` - Default, multilenguaje
 - `intfloat/multilingual-e5-large` - Mayor calidad, más pesado
+
+## Herramientas de Evaluación
+
+### Diagnosticar Retrieval
+```bash
+# Ver qué chunks recupera y sus scores de similitud
+python template/scripts/evaluate_retrieval.py --instance instances/beca18
+```
+
+### Experimentar con Parámetros
+```bash
+# Analizar configuración actual
+python template/scripts/tune_parameters.py --instance instances/beca18 --analyze
+
+# Probar diferentes configuraciones
+python template/scripts/tune_parameters.py --instance instances/beca18 --query "tu pregunta"
+```
+
+Ver [MEJORAS_RAG.md](MEJORAS_RAG.md) para guía completa de optimización.
 
 ## Solución de Problemas
 
