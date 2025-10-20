@@ -1,1 +1,14 @@
-.env
+instances/beca18/data/raw/BasesBeca18.pdf
+instances/beca18/logs
+# Ignorar todo dentro de data/
+data/**
+
+# Pero mantener las carpetas principales
+!data/
+!data/raw/
+!data/vectordb/
+
+# Y mantener los archivos .gitkeep en cada carpeta
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/vectordb/.gitkeep

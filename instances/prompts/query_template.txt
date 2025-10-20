@@ -1,0 +1,9 @@
+Información relevante de las bases de Beca 18:
+
+{context}
+
+---
+
+Pregunta: {query}
+
+Respuesta basada en los documentos:
