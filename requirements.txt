@@ -1,0 +1,9 @@
+# requirements.txt
+chromadb
+sentence-transformers
+ollama
+pypdf
+python-docx
+openpyxl
+pyyaml
+python-dotenv
