@@ -198,14 +198,25 @@ PREGUNTA: {query}"""
         # Formatear contexto
         context = self.format_context(documents, metadatas)
         
-        # Construir prompt
-        prompt = self.system_prompt.replace("{context}", context).replace("{query}", question)
+        # Log para debug - ver qué contexto se está pasando
+        self.logger.debug(f"Contexto recuperado (primeros 500 chars): {context[:500]}...")
+        
+        # Construir system prompt con contexto
+        system_prompt_with_context = self.system_prompt.replace("{context}", context)
         
         # Generar respuesta
         if stream:
-            return self.llm.generate_stream(prompt, temperature=temperature)
+            return self.llm.generate_stream(
+                prompt=question,
+                system_prompt=system_prompt_with_context,
+                temperature=temperature
+            )
         else:
-            response = self.llm.generate(prompt, temperature=temperature)
+            response = self.llm.generate(
+                prompt=question,
+                system_prompt=system_prompt_with_context,
+                temperature=temperature
+            )
             self.logger.info("Respuesta generada")
             return response
     

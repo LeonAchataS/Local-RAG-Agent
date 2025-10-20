@@ -8,6 +8,6 @@ from .base_agent import BaseAgent
 __all__ = [
     'EmbeddingService',
     'VectorDBManager',
-    'LLMService'
+    'LLMService',
     'BaseAgent',
 ]
